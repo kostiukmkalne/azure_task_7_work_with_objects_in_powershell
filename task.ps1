@@ -19,13 +19,17 @@ foreach ($file in $files) {
     # Read and convert JSON content into a PowerShell object
     $vmSizes = Get-Content -Raw -Path $filePath | ConvertFrom-Json
 
-    # Check if the target VM size exists in the current file
-    if ($vmSizes.Name -eq "Standard_B2pts_v2") {
-        $matchingRegions += $regionName
+    # Loop through each VM size and check if the target VM size exists
+    foreach ($vm in $vmSizes) {
+        if ($vm.Name -eq "Standard_B2pts_v2") {
+            $matchingRegions += $regionName
+            break  # Exit the loop once the VM size is found
+        }
     }
-    Write-Host $matchingRegions
 }
-
 
 # Convert the list of matching regions to JSON format and save to the output file
 $matchingRegions | ConvertTo-Json | Set-Content -Path $outputFile
+
+Write-Host "Regions with the VM size 'Standard_B2pts_v2':"
+Write-Host $matchingRegions
